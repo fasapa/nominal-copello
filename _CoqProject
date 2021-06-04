@@ -1,0 +1,22 @@
+-arg -w
+-arg all
+
+-R theories FP
+
+# Base development
+theories/Simp.v
+theories/Base.v
+
+# Atom metatheory
+theories/Atom/MSetNotin.v
+theories/Atom/AtomImpl.v
+theories/Atom/AtomSetImpl.v
+theories/Atom/AtomTactics.v
+theories/Atom/Atom.v
+
+# Formalization
+theories/Tactics.v
+theories/Permutation.v
+theories/Term.v
+theories/NominalRec.v
+theories/Alpha.v
