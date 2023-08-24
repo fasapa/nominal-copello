@@ -10,6 +10,9 @@ Inductive aeq: Λ -> Λ -> Prop :=
 where "a ≡α b" := (aeq (a%term) (b%term)).
 Hint Constructors aeq: core.
 
+Section AEQ2.
+Import MSetDecideAuxiliary.
+
 Inductive aeq2: Λ -> Λ -> Prop :=
 | AeqVar2: forall a, aeq2 ('a) ('a)
 | AeqApp2: forall m n p q, aeq2 m p -> aeq2 n q -> aeq2 (m × n) (p × q)
@@ -22,11 +25,11 @@ Lemma aeq2_cancel a b c m: b#(m) -> c#(m) -> aeq2 ((c ∙ b)ₜ (a ∙ c)ₜ m) 
 Proof. Admitted.
 Lemma aeq2_trans: Transitive aeq2.
 Proof. Admitted.
-Lemma aeq_perm p m n: m ≡α n -> (p ∙ₜ m) ≡α (p ∙ₜ n).
+Lemma aeq_perm_1 p m n: m ≡α n -> (p ∙ₜ m) ≡α (p ∙ₜ n).
 Proof. Admitted.
-Lemma aeq_perm_action1_cancel a b c m: b#(m) -> c#(m) -> (c ∙ b)ₜ (a ∙ c)ₜ m ≡α (a ∙ b)ₜ m.
+Lemma aeq_perm_action1_cancel_1 a b c m: b#(m) -> c#(m) -> (c ∙ b)ₜ (a ∙ c)ₜ m ≡α (a ∙ b)ₜ m.
 Proof. Admitted.
-Lemma aeq_trans: Transitive aeq.
+Lemma aeq_trans_1: Transitive aeq.
 Proof. Admitted.
 Lemma aeq_support1 a m n: a#(m) -> m ≡α n -> a#(n).
 Proof. Admitted.
@@ -35,58 +38,53 @@ Proof. Admitted.
 Lemma action_neither a b m: a <> b -> a#(m) -> b#(m) -> (a ∙ b)ₜ m = m.
 Proof. Admitted.
 
-Section LOL.
-  Import MSetDecideAuxiliary.
-
-  Lemma aeqs m n: m ≡α n <-> aeq2 m n.
-  Proof.
-    split.
-    - induction 1.
-      + constructor.
-      + constructor; auto.
-      + destruct (a == b); subst.
-        * apply AeqAbs22; pick fresh z; lets: (aeq2_perm [(b,z)]); simpls;
-            assert (Hz: z ∉ L). fsetdec.
-          specialize (H0 _ Hz); apply (aeq2_perm [(b,z)]) in H0; simpls;
-            do 2 rewrite action_involutive in H0; auto.
-        * destruct (dec_In a (support m)); pick fresh z.
-          -- assert (HH1: a#((a ∙ z)ₜ m)).
-             { apply action_fresh_left. fsetdec. fsetdec. }
-             assert(HH2: z ∉ L).
-             { fsetdec. }.
-             specialize (H _ HH2).
-             apply (aeq_support1 _ _ _ HH1) in H.
-             assert (HH3: a <> z).
-             { fsetdec. }
-             apply (dec2 _ _ _ _ n0 HH3) in H.
-             apply AeqAbs21. auto. auto. specialize (H0 _ HH2).
-             apply (aeq2_perm [(a,z)]) in H0; simpls;
-               rewrite action_involutive in H0; rewrite action_switch in H0.
-             eapply aeq2_trans.
-             ++ apply H0.
-             ++ rewrite (action_switch a b). apply aeq2_cancel. auto. fsetdec.
-          -- assert (Hz: z ∉ L). fsetdec.
-             specialize (H _ Hz); rewrite action_neither in H; try fsetdec.
-             apply (aeq_support1 _ _ _ H1) in H.
-             assert (HH1: a <> z).
-             { fsetdec. }
-             apply (dec2 _ _ _ _ n0 HH1) in H.
-             apply AeqAbs21. auto. fsetdec.
-             specialize (H0 _ Hz). apply (aeq2_perm [(a,z)]) in H0; simpls.
-             rewrite action_involutive in H0. rewrite action_switch in H0.
-             eapply aeq2_trans.
-             ++ apply H0.
-             ++ rewrite (action_switch a b). apply aeq2_cancel. auto. fsetdec.
-    - induction 1.
-      + auto.
-      + auto.
-      + constructor 3 with (support n); intros; rewrite action_switch in IHaeq2;
-          apply (aeq_perm [(a,c)]) in IHaeq2; simpls.
-        lets: aeq_trans; unfold Transitive in *. specialize (H3 ((a ∙ c)ₜm) ((a ∙ c)ₜ(b ∙ a)ₜn)).
-        apply H3; auto. apply aeq_perm_action1_cancel; auto.
-      + constructor 3 with ∅; intros; lets: (aeq_perm ([(a,c)])); simpls; auto.
-  Qed.
-End LOL.
+Lemma aeqs m n: m ≡α n <-> aeq2 m n.
+Proof.
+  split.
+  - induction 1.
+    + constructor.
+    + constructor; auto.
+    + destruct (a == b); subst.
+      * apply AeqAbs22; pick fresh z; lets: (aeq2_perm [(b,z)]); simpls;
+          assert (Hz: z ∉ L). fsetdec.
+        specialize (H0 _ Hz); apply (aeq2_perm [(b,z)]) in H0; simpls;
+          do 2 rewrite action_involutive in H0; auto.
+      * destruct (dec_In a (support m)); pick fresh z.
+        -- assert (HH1: a#((a ∙ z)ₜ m)).
+           { apply action_fresh_left. fsetdec. fsetdec. }
+           assert(HH2: z ∉ L). { fsetdec. }
+           specialize (H _ HH2).
+           apply (aeq_support1 _ _ _ HH1) in H.
+           assert (HH3: a <> z). { fsetdec. }
+           apply (dec2 _ _ _ _ n0 HH3) in H.
+           apply AeqAbs21. auto. auto. specialize (H0 _ HH2).
+           apply (aeq2_perm [(a,z)]) in H0; simpls;
+             rewrite action_involutive in H0; rewrite action_switch in H0.
+           eapply aeq2_trans.
+           ++ apply H0.
+           ++ rewrite (action_switch a b). apply aeq2_cancel. auto. fsetdec.
+        -- assert (Hz: z ∉ L). fsetdec.
+           specialize (H _ Hz); rewrite action_neither in H; try fsetdec.
+           apply (aeq_support1 _ _ _ H1) in H.
+           assert (HH1: a <> z).
+           { fsetdec. }
+           apply (dec2 _ _ _ _ n0 HH1) in H.
+           apply AeqAbs21. auto. fsetdec.
+           specialize (H0 _ Hz). apply (aeq2_perm [(a,z)]) in H0; simpls.
+           rewrite action_involutive in H0. rewrite action_switch in H0.
+           eapply aeq2_trans.
+           ++ apply H0.
+           ++ rewrite (action_switch a b). apply aeq2_cancel. auto. fsetdec.
+  - induction 1.
+    + auto.
+    + auto.
+    + constructor 3 with (support n); intros; rewrite action_switch in IHaeq2;
+        apply (aeq_perm_1 [(a,c)]) in IHaeq2; simpls.
+      lets: aeq_trans_1; unfold Transitive in *. specialize (H3 ((a ∙ c)ₜm) ((a ∙ c)ₜ(b ∙ a)ₜn)).
+      apply H3; auto. apply aeq_perm_action1_cancel_1; auto.
+    + constructor 3 with ∅; intros; lets: (aeq_perm_1 ([(a,c)])); simpls; auto.
+Qed.
+End AEQ2.
 
 Lemma aeq_perm m n p: m ≡α n -> (p ∙ₜ m) ≡α (p ∙ₜ n).
 Proof.
@@ -97,14 +95,12 @@ Qed.
 Hint Resolve aeq_perm: core.
 
 Lemma aeq_support: forall m n, m ≡α n -> support m [=] support n.
-Proof. Admitted.
-  (* induction 1. *)
-  (* - admit. *)
-  (* - admit. *)
-  (* - simpl in *. (a ∙ b) (a \ T) -> ((a ∙ b)a \ (a ∙ b)T) *)
-
-  (*   unfold "[=]"; intro w; split; intros; simpls. *)
-  (*   +  *)
+Proof. 
+  induction 1.
+  - simpl; fsetdec.
+  - simpl; fsetdec.
+  - simpl. admit.
+Admitted.
 
 Instance aeq_refl: Reflexive aeq.
 Proof.
@@ -156,9 +152,6 @@ Proof.
             rewriten (action_distr t z a b); apply (IH [(_,_)]); auto; fsetdec.
 Qed.
 Hint Resolve aeq_perm_action1_cancel: core.
-
-Lemma aeq_perm_action1_cancel1 a b c m: b#(\a ⋅ m) -> c#(m) -> (c ∙ b)ₜ (a ∙ c)ₜ m ≡α (a ∙ b)ₜ m.
-Proof. Admitted.
 
 Lemma aeq_perm_action1_neither a b m: a#(m) -> b#(m) -> (a ∙ b)ₜ m ≡α m.
 Proof.
@@ -218,12 +211,9 @@ Definition term_aeq_rect:
     {L & forall m a, a ∉ L -> P m -> P (\a ⋅ m)} ->
     forall m, P m.
 Proof.
-  introv ? Hv Happ [L HL]; apply nominal_rect.
-  - admit.
-  - admit.
-  - intros; apply abs_aeq_rename with L.
-  [apply Hv | apply Happ | apply abs_aeq_rename with L].
-    auto; introv ? HP. apply HL; [| apply (HP [])]; auto.
+  introv ? Hv Happ [L HL]; apply nominal_rect;
+  [apply Hv | apply Happ | apply abs_aeq_rename with L]; auto;
+  introv ? HP; apply HL; [| apply (HP [])]; auto.
 Defined.
 
 Definition term_aeq_rec := (fun P: Λ -> Set => term_aeq_rect P).
@@ -277,12 +267,6 @@ Proof.
     eapply eq_trans; eauto.
 Qed.
 
-[A]X => (a)(λ a . ax)
-f2: [A]X -> Y
-f1: (A × X) -> Y
-
-                             TemplateCoq => MetaCoq
-
 Lemma LIt_abs {A} a M (fvar: atom -> A) (fapp: A -> A -> A)
       (fabs: atom -> A -> A) L:
   @LIt A fvar fapp fabs L (\a ⋅ M) =
@@ -308,9 +292,11 @@ Proof.
     fequal; auto; rewrite A2; set (z := fresh (support (\_ ⋅ _) ∪ _)).
       pick fresh w for (G ∪ support m ∪ support n); apply H; simpls.
     assert (T1: (a ∙ z)ₜn ≡α (w ∙ z)ₜ(a ∙ w)ₜ n).
-    { symmetry; apply aeq_perm_action1_cancel1; [subst z; rewrite <- A2 | fsetdec]. admit. }
+    { symmetry; apply aeq_perm_action1_cancel1; [subst z; rewrite <- A2 | fsetdec].
+      simpl. (* obvio, precisa do lema certo. *) admit. }
     assert (T2:  (w ∙ z)ₜ(b ∙ w)ₜ m ≡α (b ∙ z)ₜ m).
-    { apply aeq_perm_action1_cancel1; [| fsetdec]. admit. }
+    { apply aeq_perm_action1_cancel1; [| fsetdec]. subst z; simpl.
+      (* tbm e obvio, so precisa do lema certo. *) admit. }
     eapply (aeq_perm _ _ [(w, z)]) in HH; simpls;
       [apply (aeq_trans _ _ _ T1 (aeq_trans _ _ _ HH T2)) |]; auto.
 Admitted.
