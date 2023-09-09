@@ -1,6 +1,8 @@
 From FP Require Import Base Atom Permutation Term NominalRec.
 Local Open Scope aset_scope.
 
+Local Set Warnings "-deprecated-hint-without-locality -deprecated-instance-without-locality".
+
 (**  *α equivalence *)
 Reserved Notation "a ≡α b" (at level 61).
 Inductive aeq: Λ -> Λ -> Prop :=
@@ -152,6 +154,28 @@ Proof.
             rewriten (action_distr t z a b); apply (IH [(_,_)]); auto; fsetdec.
 Qed.
 Hint Resolve aeq_perm_action1_cancel: core.
+
+Lemma aeq_perm_action1_cancel1 a b c m: b#(\a ⋅ m) -> c#(m) -> (c ∙ b)ₜ (a ∙ c)ₜ m ≡α (a ∙ b)ₜ m.
+Proof. 
+  intros; destruct (b == a); subst. 
+  - rewrite (action_switch c a), action_involutive, action_id; reflexivity.
+  - rewrite aeq_perm_action1_cancel. reflexivity.
+    + simpl in *; apply notin_remove_1 in H as [].
+      * subst; congruence.
+      * assumption.
+    + assumption.
+Qed.
+
+Lemma aeq_perm_action1_cancel2 a b c m: c#(\a ⋅ m) -> b#(m) -> (c ∙ b)ₜ (a ∙ c)ₜ m ≡α (a ∙ b)ₜ m.
+Proof. 
+  intros; destruct (a == c); subst. 
+  - rewrite action_id; reflexivity.
+  - rewrite aeq_perm_action1_cancel. reflexivity.
+    + assumption.
+    + simpl in *; apply notin_remove_1 in H as [].
+      * subst; congruence.
+      * assumption.
+Qed.
 
 Lemma aeq_perm_action1_neither a b m: a#(m) -> b#(m) -> (a ∙ b)ₜ m ≡α m.
 Proof.

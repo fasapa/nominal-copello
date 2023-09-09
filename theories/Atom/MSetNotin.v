@@ -14,6 +14,9 @@
 
 From Coq Require Import MSets.MSetInterface MSets.MSetDecide.
 
+Local Set Warnings "-fragile-hint-constr -deprecated-hint-without-locality".
+
+
 (* *********************************************************************** *)
 (** * Implementation *)
 

@@ -7,7 +7,7 @@
 
 (** A library that provides tactics for "simplifying" goals using
     a combination of common proof steps. *)
-From Coq Require Import Program.Equality Program.Tactics Lia omega.Omega.
+From Coq Require Import Program.Equality Program.Tactics Lia.
 
 (* *********************************************************************** *)
 (** * Variants on standard tactics *)
@@ -179,7 +179,6 @@ Ltac default_step :=
     | destruct_exists
     | progress default_autorewrite
     | solve [let H := fresh in assert (H : False) by lia; elim H]
-    | solve [let H := fresh in assert (H : False) by omega; elim H]
     ].
 
 (** [default_case_split] is similar to [default_step], except that the

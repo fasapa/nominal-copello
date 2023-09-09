@@ -20,3 +20,6 @@ theories/Permutation.v
 theories/Term.v
 theories/NominalRec.v
 theories/Alpha.v
+
+# Subst composition
+theories/Subst.v

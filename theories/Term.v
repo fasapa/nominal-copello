@@ -1,6 +1,8 @@
 (** *λ calculus nominal *)
 From FP Require Import Base Atom Permutation.
 
+Local Set Warnings "-deprecated-hint-without-locality -deprecated-instance-without-locality -deprecated-hint-rewrite-without-locality".
+
 (** Lambda calculus terms *)
 Inductive term: Set :=
 | Var: atom -> term

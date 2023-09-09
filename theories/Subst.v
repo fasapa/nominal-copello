@@ -55,13 +55,10 @@ Proof. intros; unfold subst_term; rewrite LIt_var; simplify. Qed.
 Lemma T1: ∀ a b c N M, (a ∙ b)ₜ ([c := N]M) ≡α [((a ∙ b)ₐ c) := ((a ∙ b)ₜ N)]((a ∙ b)ₜ M).
 Proof. Admitted.
 
-Lemma aeq_perm_action1_cancel1 a b c m: b#(m) -> c#(\a ⋅ m) -> (c ∙ b)ₜ (a ∙ c)ₜ m ≡α (a ∙ b)ₜ m.
-Proof. (* prova simpls, utilizar aeq_perm_action1_cancel de Alpha.v *) Admitted.
-
 Lemma subst_abs_neq a b m n: a <> b -> b#(n) -> [a := n](\b ⋅ m) ≡α \b ⋅ ([a := n]m).
 Proof. 
   intros; rewrite subst_abs; simpl; set (c := fresh _).
-  apply fresh AeqAbs with d. 
+  apply fresh AeqAbs with d.
   etransitivity. apply T1.
   rewrite (subst_aeq1 ((c ∙ d)ₜ(b ∙ c)ₜm) ((b ∙ d)ₜm)).
   - rewrite swap_neither; [idtac | (* obvio, precisa do lema certo. *) admit | fsetdec].
@@ -71,7 +68,9 @@ Proof.
     apply aeq_perm_action1_neither. assumption. fsetdec.
     rewrite <- (swap_neither b d a) at 1; [idtac | assumption | fsetdec].
     symmetry. apply T1.
-  - apply aeq_perm_action1_cancel1; [fsetdec | (* obvio, precisa do lema certo. *) admit].
+  - apply aeq_perm_action1_cancel2; simpl in *.
+    + subst c. admit. (* obvio, precisa do lema certo. *) 
+    + fsetdec. 
 Admitted. 
 
 Lemma aeq_abs_body a m n: m ≡α n -> \a ⋅ m ≡α \a ⋅ n.

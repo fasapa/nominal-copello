@@ -1,6 +1,8 @@
 (** *Swap based permutation *)
 Require Import Base Atom.
 
+Local Set Warnings "-deprecated-hint-without-locality -deprecated-instance-without-locality -deprecated-hint-rewrite-without-locality".
+
 (* Swap function *)
 Definition swap (a b: atom): atom -> atom :=
   fun c => if a == c then b else if b == c then a else c.

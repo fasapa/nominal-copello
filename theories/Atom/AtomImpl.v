@@ -7,6 +7,9 @@
 Require Import Base.
 From Coq Require Import Arith Arith.PeanoNat MSets.
 
+Local Set Warnings "-deprecated-hint-without-locality -deprecated-instance-without-locality".
+
+
 (** *Nomes Atômicos *)
 (** Átomos são identificadores, sua estrutura é irrelevante (opaca). As únicas propriedades de
     interesse que nomes devem possuir são:
